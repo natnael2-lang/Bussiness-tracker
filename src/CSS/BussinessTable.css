@@ -1,0 +1,31 @@
+table{
+    border-collapse: collapse;
+   
+}
+tr th{
+    background-color: rgb(89, 99, 240);
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+th,td{
+    border:1px solid rgb(156, 150, 150);
+    padding:2px;
+    text-align: center;
+}
+tbody tr:hover{
+    background-color: lightgray;
+}
+thead tr{
+  position: sticky;
+  top: -2px;
+}
+.table-div{
+   
+    overflow-x: auto;
+    overflow-y: auto;
+    margin-bottom: 10px;
+   
+    flex: 1;
+
+   
+}
