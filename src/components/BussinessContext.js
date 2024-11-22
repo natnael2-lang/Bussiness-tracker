@@ -7,8 +7,20 @@ export const ContextProvider = ({ children }) => {
     const [calc, setCalc] = useState([]);
     const [isGet,setIsGet]=useState(true);
     const[isFirst,setIsFirst]=useState(true);
-    
+    const[result,setResult]=useState({});
 
+
+    
+   
+    const[isFixedPopup,setIsFixedPopup]=useState(false);
+   
+   
+     const handleFixedResult=(val)=>{
+        localStorage.setItem("Fixed",JSON.stringify(val));
+          setResult(val)
+      
+     }
+    
     
       useEffect(()=>{
        if(isFirst){setIsFirst(false); return}
@@ -17,8 +29,18 @@ export const ContextProvider = ({ children }) => {
 
 
       },[isGet])
+
+      
     
     
+     const handleFixedPopup=()=>{
+          setIsFixedPopup(true);
+     }
+     const closeFixedPopup=()=>{
+          setIsFixedPopup(false);
+     }
+
+      
    
   
     const handleCalcGet=()=>{
@@ -58,7 +80,7 @@ export const ContextProvider = ({ children }) => {
     };
 
     return (
-        <BussinessContext.Provider value={{ data, handleDailyPush, handleDailyGet, handleClear, handleCalcPush, calc }}>
+        <BussinessContext.Provider value={{ data, handleDailyPush, handleDailyGet, handleClear, handleCalcPush, calc,isFixedPopup,closeFixedPopup,result ,handleFixedPopup,handleFixedResult}}>
             {children}
         </BussinessContext.Provider>
     );

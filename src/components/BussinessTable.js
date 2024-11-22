@@ -3,22 +3,37 @@ import { BussinessContext } from './BussinessContext';
 import "../CSS/BussinessTable.css";
 
 const BussinessTable = () => {
-    const { data, handleDailyGet, handleClear, handleCalcPush } = useContext(BussinessContext);
-    const [totalUnit, setTotalUnit] = useState(100);
-    const [variableCost, setVariableCost] = useState(1000);
-    const [fixedCost, setFixedCost] = useState(800);
+    const { data, handleDailyGet, handleClear, handleCalcPush, result, handleFixedPopup } = useContext(BussinessContext);
+    const [totalUnit, setTotalUnit] = useState(0);
+    const [variableCost, setVariableCost] = useState(0);
+    const [fixedCost, setFixedCost] = useState(0);
     const [calculatedValues, setCalculatedValues] = useState([]);
+
+    useEffect(() => {
+        // Retrieve fixed costs from localStorage on component mount
+        const storedValues = JSON.parse(localStorage.getItem("Fixed")) || {};
+        setFixedCost(storedValues.fixedCost || 0);
+        setVariableCost(storedValues.variableCost || 0);
+        setTotalUnit(storedValues.totalUnit || 0);
+    }, []);
+
+    useEffect(() => {
+        // Update state based on the result from the context
+        if (result && Object.keys(result).length > 0) {
+            setFixedCost(result.fixedCost || 0);
+            setVariableCost(result.variableCost || 0);
+            setTotalUnit(result.totalUnit || 0);
+            // Ensure to also update localStorage whenever result changes
+            localStorage.setItem("Fixed", JSON.stringify(result));
+        }
+    }, [result]);
 
     useEffect(() => {
         if (data.length === 0) return;
 
         const values = data.map((element, index) => {
-            const revenue = data
-                .slice(0, index + 1)
-                .reduce((acc, ex) => acc + (ex.sellingPricePerUnit * ex.numberOfUnit), 0);
-            const numberOfUnit = data
-                .slice(0, index + 1)
-                .reduce((acc, ex) => acc + ex.numberOfUnit, 0);
+            const revenue = data.slice(0, index + 1).reduce((acc, ex) => acc + (ex.sellingPricePerUnit * ex.numberOfUnit), 0);
+            const numberOfUnit = data.slice(0, index + 1).reduce((acc, ex) => acc + ex.numberOfUnit, 0);
             const grossProfit = revenue - (numberOfUnit * (variableCost / totalUnit));
             const netProfit = revenue - (numberOfUnit * (variableCost / totalUnit)) - fixedCost;
 
@@ -33,13 +48,13 @@ const BussinessTable = () => {
 
         setCalculatedValues(values);
         handleCalcPush(values);
-        
-    }, [data, variableCost, fixedCost, totalUnit]); // Add dependencies
+    }, [data, variableCost, fixedCost, totalUnit]);
 
     return (
         <>
             <div style={{ display: "flex", justifyContent: "end", gap: "10px" }}>
-                <button onClick={handleDailyGet} style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "lightGreen" }}>Get Data</button>
+                <button onClick={handleFixedPopup} style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "lightGreen" }}>Fixed Costs</button>
+                <button onClick={handleDailyGet} style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "lightGreen" }}>Get Result</button>
                 <button onClick={handleClear} style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "red" }}>Clear</button>
             </div>
 
@@ -61,21 +76,21 @@ const BussinessTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            { data.length>0 && data.map((element, index) => {
-                                const calculatedValue = calculatedValues[index] || {}; // Safeguard against undefined
-                                const remainingUnit = totalUnit - (calculatedValue.numberOfUnit );
+                            {data.map((element, index) => {
+                                const calculatedValue = calculatedValues[index] || {};
+                                const remainingUnit = totalUnit - (calculatedValue.numberOfUnit || 0);
 
                                 return (
                                     <tr key={element.date}>
                                         <td>{element.date}</td>
                                         <td>{`${element.sellingPricePerUnit} ${element.unit}`}</td>
                                         <td>{element.numberOfUnit}</td>
-                                        <td>{calculatedValue.numberOfUnit }</td>
-                                        <td>{calculatedValue.revenue }</td>
-                                        <td>{calculatedValue.grossProfit }</td>
-                                        <td>{calculatedValue.netProfit }</td>
+                                        <td>{calculatedValue.numberOfUnit || 0}</td>
+                                        <td>{calculatedValue.revenue || 0}</td>
+                                        <td>{calculatedValue.grossProfit || 0}</td>
+                                        <td>{calculatedValue.netProfit || 0}</td>
                                         <td>{remainingUnit}</td>
-                                        <td>{((fixedCost + variableCost - (calculatedValue.revenue )) / 60) }</td>
+                                        <td>{((fixedCost + variableCost - (calculatedValue.revenue || 0)) / 60) || 0}</td>
                                         <td>
                                             <button style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "red" }}>X</button>
                                         </td>
