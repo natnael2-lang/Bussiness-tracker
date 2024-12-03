@@ -105,7 +105,7 @@ let selectedYear=null;
             remainingHours += 24;
         }
         var ethDate = new ethDateTime(remainingDays+1, remainingMonths+1, remainingYears + 4 * fourYearsPassed + 1964, remainingHours, eurDate.getMinutes(), eurDate.getSeconds());
-        return ethDate;
+        return ethDate.resultDate;
     }
 
     
@@ -198,6 +198,7 @@ let selectedYear=null;
         this.dateWithDayString = dayOfWeekString(this.getDay()) + ', ' + this.dateString;
         this.dateTimeString = this.dateString + ', ' + this.timeString;
         this.fullDateTimeString = this.dateTimeString + ', ' + dayOfWeekString(this.getDay()) + '.';
+        this.resultDate={time:this.timeString,day:dayOfWeekString(this.getDay()),month:monthStringEth(mon),date:this.date,ok:"ok"}
         function ethDayOfWeek() {
             return (this.year + 2 * this.month + this.date + ethDifference(this.year)) % 7;
             function ethDifference(ethYear) {
@@ -228,7 +229,7 @@ let selectedMonth = ethiopianDate.month - 1;
 selectedMonth=selectedMonth;
 let selectedYear = ethiopianDate.year;
 selectedYear=selectedYear; 
-   return ethiopianDate.fullDateTimeString
+   return ethiopianDate
 }
 
 

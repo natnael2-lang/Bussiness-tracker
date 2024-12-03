@@ -1,54 +1,79 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { BussinessContext } from './BussinessContext';
 import "../CSS/BussinessTable.css";
 
 const BussinessTable = () => {
-    const { data, handleDailyGet, handleClear, handleCalcPush, result, handleFixedPopup } = useContext(BussinessContext);
-    const [totalUnit, setTotalUnit] = useState(0);
-    const [variableCost, setVariableCost] = useState(0);
-    const [fixedCost, setFixedCost] = useState(0);
+    const { data, handleDailyGet, handleClear, handleCalcPush,  handleFixedPopup,handleDelete,result } = useContext(BussinessContext);
+   
     const [calculatedValues, setCalculatedValues] = useState([]);
 
-    useEffect(() => {
-        // Retrieve fixed costs from localStorage on component mount
-        const storedValues = JSON.parse(localStorage.getItem("Fixed")) || {};
-        setFixedCost(storedValues.fixedCost || 0);
-        setVariableCost(storedValues.variableCost || 0);
-        setTotalUnit(storedValues.totalUnit || 0);
-    }, []);
-
-    useEffect(() => {
-        // Update state based on the result from the context
-        if (result && Object.keys(result).length > 0) {
-            setFixedCost(result.fixedCost || 0);
-            setVariableCost(result.variableCost || 0);
-            setTotalUnit(result.totalUnit || 0);
-            // Ensure to also update localStorage whenever result changes
-            localStorage.setItem("Fixed", JSON.stringify(result));
-        }
-    }, [result]);
+  
 
     useEffect(() => {
         if (data.length === 0) return;
-
+        console.log("data table",data)
+    
+        const storedValues = JSON.parse(localStorage.getItem("Fixed")) || [];
+        console.log("in table",storedValues)
+      
+        var grossProfitP = 0;
         const values = data.map((element, index) => {
+            // Find all matching fixed costs for the current index
+           
+            const matchingFixed = Array.isArray(storedValues)
+                ? storedValues.filter(value => value.startI <= index)
+                : [];
+            
+            // Get the last matching fixed cost entry, if any
+            const lastMatchingFixed = matchingFixed[matchingFixed.length - 1];
+    
+            let currentFixedCost = 0;
+            let currentVariableCost = 0;
+            let currentTotalUnit = 0;
+           
+            // If a match is found, update current costs and units
+            if (lastMatchingFixed) {
+                currentFixedCost = lastMatchingFixed.fixedCost || 0;
+                
+                currentVariableCost = lastMatchingFixed.variableCost || 0;
+               
+                currentTotalUnit = lastMatchingFixed.totalUnit || 0;
+            }
+           
+    
             const revenue = data.slice(0, index + 1).reduce((acc, ex) => acc + (ex.sellingPricePerUnit * ex.numberOfUnit), 0);
             const numberOfUnit = data.slice(0, index + 1).reduce((acc, ex) => acc + ex.numberOfUnit, 0);
-            const grossProfit = revenue - (numberOfUnit * (variableCost / totalUnit));
-            const netProfit = revenue - (numberOfUnit * (variableCost / totalUnit)) - fixedCost;
-
+    
+            // Avoid division by zero
+            if (currentTotalUnit > 0) {
+                grossProfitP += (element.numberOfUnit * (currentVariableCost / currentTotalUnit));
+            }
+    
+            const grossProfit = revenue - (grossProfitP);
+            const netProfit = revenue - grossProfitP - currentFixedCost;
+            const newS=storedValues.filter((val,ind)=>val.startI<=index)
+                                 
+            const totalU=newS.reduce((acc, ex) => acc + ex.totalUnit, 0)
+            const totalVariableCost=newS.reduce((acc, ex) => acc + ex.variableCost, 0)
+           const breakEven=((currentFixedCost + totalVariableCost - (revenue || 0)) / 60) || 0
+           
+    
             return { 
                 date: element.date, 
-                netProfit: netProfit,
-                grossProfit: grossProfit,
-                revenue: revenue,
-                numberOfUnit: numberOfUnit 
+                netProfit,
+                grossProfit,
+                revenue,
+                numberOfUnit,
+                totalU,
+                breakEven
+               
             };
         });
-
+        console.log("values",values)
+    
         setCalculatedValues(values);
         handleCalcPush(values);
-    }, [data, variableCost, fixedCost, totalUnit]);
+    }, [data,result]);
 
     return (
         <>
@@ -77,22 +102,23 @@ const BussinessTable = () => {
                         </thead>
                         <tbody>
                             {data.map((element, index) => {
+        
                                 const calculatedValue = calculatedValues[index] || {};
-                                const remainingUnit = totalUnit - (calculatedValue.numberOfUnit || 0);
-
+                               
+                        
                                 return (
-                                    <tr key={element.date}>
-                                        <td>{element.date}</td>
+                                    <tr key={index}>
+                                        <td>{`${element.date.day}, ${element.date.month} ${element.date.ethDate}, ${element.date.time}`}</td>
                                         <td>{`${element.sellingPricePerUnit} ${element.unit}`}</td>
                                         <td>{element.numberOfUnit}</td>
                                         <td>{calculatedValue.numberOfUnit || 0}</td>
                                         <td>{calculatedValue.revenue || 0}</td>
                                         <td>{calculatedValue.grossProfit || 0}</td>
                                         <td>{calculatedValue.netProfit || 0}</td>
-                                        <td>{remainingUnit}</td>
-                                        <td>{((fixedCost + variableCost - (calculatedValue.revenue || 0)) / 60) || 0}</td>
+                                        <td>{calculatedValue.totalU-calculatedValue.numberOfUnit}</td>
+                                        <td>{calculatedValue.breakEven<=0?"succeed":Math.ceil(calculatedValue.breakEven)}</td>
                                         <td>
-                                            <button style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "red" }}>X</button>
+                                            <button style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "red" }} onClick={()=>handleDelete(index)} >X</button>
                                         </td>
                                     </tr>
                                 );

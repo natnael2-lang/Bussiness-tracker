@@ -5,7 +5,7 @@ import "../CSS/CurveChart.css";
 
 const CurveChart = () => {
     const { calc } = useContext(BussinessContext);
-    console.log(calc)
+   
 
     return (
         <div className="chart-container">

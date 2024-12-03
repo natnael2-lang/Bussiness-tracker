@@ -5,47 +5,37 @@ export const BussinessContext = createContext();
 export const ContextProvider = ({ children }) => {
     const [data, setData] = useState([]);
     const [calc, setCalc] = useState([]);
-    const [isGet,setIsGet]=useState(true);
-    const[isFirst,setIsFirst]=useState(true);
-    const[result,setResult]=useState({});
+    const [result, setResult] = useState({});
+    const [isFixedPopup, setIsFixedPopup] = useState(false);
 
-
-    
-   
-    const[isFixedPopup,setIsFixedPopup]=useState(false);
-   
-   
-     const handleFixedResult=(val)=>{
-        localStorage.setItem("Fixed",JSON.stringify(val));
-          setResult(val)
+    useEffect(() => {
+        // Update state based on the result from the context
+        if (result && Object.keys(result).length > 0) {
+            const storedValues = JSON.parse(localStorage.getItem("Fixed")) || [];
       
-     }
-    
-    
-      useEffect(()=>{
-       if(isFirst){setIsFirst(false); return}
-       const calc2=JSON.parse(localStorage.getItem("calcStorage"))|| [];
-       setCalc(calc2);
 
+            // Ensure storedValues is an array
+            if (Array.isArray(storedValues)) {
+                localStorage.setItem("Fixed", JSON.stringify([...storedValues, result]));
+                console.log("stored fixed",[...storedValues, result])
+            } else {
+                console.error("Expected storedValues to be an array, but it is not.");
+                localStorage.setItem("Fixed", JSON.stringify([result])); // Fallback to array with result
+            }
+        }
+    }, [result]);
 
-      },[isGet])
+    const handleFixedResult = (val) => {
+        setResult(val);
+    };
 
-      
-    
-    
-     const handleFixedPopup=()=>{
-          setIsFixedPopup(true);
-     }
-     const closeFixedPopup=()=>{
-          setIsFixedPopup(false);
-     }
+    const handleFixedPopup = () => {
+        setIsFixedPopup(true);
+    };
 
-      
-   
-  
-    const handleCalcGet=()=>{
-      setIsGet(prev=>!prev)
-    }
+    const closeFixedPopup = () => {
+        setIsFixedPopup(false);
+    };
 
     const handleDailyPush = (newData) => {
         const daily = JSON.parse(localStorage.getItem("dailyData")) || [];
@@ -55,32 +45,69 @@ export const ContextProvider = ({ children }) => {
     const handleDailyGet = (e) => {
         e.preventDefault();
         const daily = JSON.parse(localStorage.getItem("dailyData"));
-   
+
         if (!daily) {
-            console.log([]);
+            
             return;
         }
         setData(daily);
-        handleCalcGet();
     };
 
     const handleClear = (e) => {
         e.preventDefault();
         localStorage.removeItem("dailyData");
+        localStorage.removeItem("Fixed");
         setData([]);
         setCalc([]);
-        localStorage.removeItem("calcStorage")
+    
+       
+       
     };
 
     const handleCalcPush = (newCalcData) => {
-      const calc2=JSON.parse(localStorage.getItem("calcStorage")) || [];
-      const data2=[...calc2,newCalcData[newCalcData.length-1]]
-      localStorage.setItem("calcStorage",JSON.stringify(data2));
-        
+        setCalc(newCalcData);
     };
+    const handleDelete=(ind)=>{
+        const data2=data.filter((element,index)=>index !==ind)
+        localStorage.setItem("dailyData", JSON.stringify([...data2]));
+       const fixed= JSON.parse(localStorage.getItem("Fixed"));
+       const fixed2=fixed.find(val=>val.startI ===ind) || [];
+       const newD=fixed.filter((val)=>val.startI!==ind)
+       if(fixed2 && fixed2.length>0){
+        const fixedDoc=fixed[0];
+        const i=(ind+1);
+       
+        if(i<fixed.length-1){
+            const fixedDoc1={...fixedDoc,startI:i}
+          
+            localStorage.setItem("Fixed",JSON.stringify([...newD,fixedDoc1]))
+            
+        }
+       else{localStorage.setItem("Fixed",JSON.stringify([...newD]))
+       }
+        
+       }
+       else{localStorage.setItem("Fixed",JSON.stringify([...newD]))}
+        setData(data2)
+       
+
+    }
 
     return (
-        <BussinessContext.Provider value={{ data, handleDailyPush, handleDailyGet, handleClear, handleCalcPush, calc,isFixedPopup,closeFixedPopup,result ,handleFixedPopup,handleFixedResult}}>
+        <BussinessContext.Provider value={{ 
+            data, 
+            handleDailyPush, 
+            handleDailyGet, 
+            handleClear, 
+            handleCalcPush, 
+            calc, 
+            isFixedPopup, 
+            closeFixedPopup, 
+            result, 
+            handleFixedPopup, 
+            handleFixedResult ,
+            handleDelete
+        }}>
             {children}
         </BussinessContext.Provider>
     );

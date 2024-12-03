@@ -10,11 +10,15 @@ const FixedCost = () => {
 
     const handleFixedSubmit = (e) => {
         e.preventDefault();
+        const daily = JSON.parse(localStorage.getItem("dailyData")) || [];
         const data = {
             fixedCost: Number(fixedCost),
             variableCost: Number(variableCost),
-            totalUnit: Number(totalUnit)
+            totalUnit: Number(totalUnit),
+            startI:daily.length ,
+            
         };
+        console.log("in fixed",data)
     
         handleFixedResult(data);
         setFixedCost("");
