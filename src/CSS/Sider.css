@@ -13,6 +13,9 @@
     
 
 }
+.sider.aside-menu{
+    display: none;
+}
 .sider>ul button{
     font-family: sans-serif;
     font-weight: 600;

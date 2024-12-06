@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import "./App.css"
@@ -13,32 +13,45 @@ import FixedCost from "./components/FixedCost";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard"
+import { BussinessContext } from "./components/BussinessContext";
 
 
 const App = () => {
-  return (
-    <div className="appContainer">
-        <div className="app-containt" style={{ overflowY:"auto" ,width:"100%" ,height:"100%",position:"relative" }}>
-          <ContextProvider>
-          <FixedCost/>
-          <Router>
-      <Navbar/>
-        <Routes>
-       
-          <Route path="/home" element={<Home/>}/>
-          <Route path="/" element={<Dashboard/>}/>
-         
-        </Routes>
-      </Router>
-          </ContextProvider>
         
-        </div>
+  const {menu}=useContext(BussinessContext);
+ 
+  return (
+  
+       
+
+        
+   
+            <div className={`appContainer ${menu?"appcontainer-menu":""}`}>
+            <div className="app-containt" style={{ overflowY:"auto" ,width:"100%" ,height:"100%",position:"relative" }}>
+          
+           <FixedCost/>
+           <Router>
+       <Navbar/>
+         <Routes>
+        
+           <Route path="/home" element={<Home/>}/>
+           <Route path="/" element={<Dashboard/>}/>
+          
+         </Routes>
+       </Router>
+         
+         
+         </div>
+ 
+         </div>
+        
+       
 
 
       
     
       
-    </div>
+
     
   );
 };

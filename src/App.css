@@ -40,6 +40,9 @@
    border-radius: 6px; 
    background: hsla(0, 0%, 1%, 0.623);
 }
+.appContainer.appcontainer-menu{
+   padding-left: 20px;
+}
 
 
 .app-containt:hover::-webkit-scrollbar-thumb {

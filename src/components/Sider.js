@@ -4,7 +4,7 @@ import { BussinessContext } from "./BussinessContext";
 import { useContext,useState } from "react";
 import { EthCalender } from "./EthCalender";
 const Sider=()=>{
-    const{handleFixedPopup,handleClear,returnVals,report}=useContext(BussinessContext);
+    const{handleFixedPopup,handleClear,returnVals,report,menu}=useContext(BussinessContext);
     const[returns,setReturns]=useState([]);
 
 
@@ -82,7 +82,7 @@ const Sider=()=>{
 
 
     return(
-        <aside className="sider">
+        <aside className={`sider ${menu?"aside-menu":""}`}>
             <ul>
                 <li><button onClick={getDailyData}>Daily report</button></li>
                 <li><button onClick={getWeeklyData}>Weekly report</button></li>

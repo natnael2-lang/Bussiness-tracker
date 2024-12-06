@@ -63,7 +63,7 @@ const BussinessTable = () => {
                                     calculatedValue && calculatedValue.length>0&&<tr key={index}>
                                         <td>{`${calculatedValue[0].date.day}, ${calculatedValue[0].date.month} ${calculatedValue[0].date.ethDate}, ${calculatedValue[0].date.time}, week ${calculatedValue[0].date.week}`}</td>
                                         <td>{`${calculatedValue[0].sellingPricePerUnit} ${calculatedValue[0].unit}`}</td>
-                                        <td>{element.numberOfUnit}</td>
+                                        <td>{calculatedValue[0].numberOfUnit}</td>
                                         <td>{element.numberOfUnit || 0}</td>
                                         <td>{element.revenue || 0}</td>
                                         <td>{element.grossProfit || 0}</td>

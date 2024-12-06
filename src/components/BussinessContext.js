@@ -7,6 +7,7 @@ export const ContextProvider = ({ children }) => {
     const [calc, setCalc] = useState([]);
     const [result, setResult] = useState({});
     const [isFixedPopup, setIsFixedPopup] = useState(false);
+    const[menu,setMenuSlide]=useState(false)
 
     useEffect(() => {
       
@@ -176,7 +177,9 @@ export const ContextProvider = ({ children }) => {
             handleFixedResult ,
             handleDelete,
             returnVals,
-            report
+            report,
+            setMenuSlide,
+            menu
         }}>
             {children}
         </BussinessContext.Provider>

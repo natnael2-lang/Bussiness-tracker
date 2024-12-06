@@ -28,7 +28,7 @@ const CurveChart = () => {
                     </ResponsiveContainer>
 
                     <h2 className="chart-title">Sales Bar Chart</h2>
-                    <ResponsiveContainer width="60%" height={300}>
+                    <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={calc}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="date" />
