@@ -1,0 +1,33 @@
+.sider{
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width:auto;
+    bottom: 0;
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.7);
+    padding:24px 16px;
+    border: 1px solid lightgray;
+    background-color: white;
+    z-index: 2000;
+   
+    
+
+}
+.sider>ul button{
+    font-family: sans-serif;
+    font-weight: 600;
+    
+    border: none;
+    background-color:transparent;
+    padding: 8px 12px;
+}
+.sider>ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  
+   gap: 20px;
+}
+.sider>ul button:hover{
+    background-color: rgb(240, 238, 238);
+}

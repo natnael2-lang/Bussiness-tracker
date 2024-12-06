@@ -1,89 +1,39 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { BussinessContext } from './BussinessContext';
 import "../CSS/BussinessTable.css";
+import CurveChart from './CurveChart';
 
 const BussinessTable = () => {
-    const { data, handleDailyGet, handleClear, handleCalcPush,  handleFixedPopup,handleDelete,result } = useContext(BussinessContext);
+    const { data, handleCalcPush,handleDelete} = useContext(BussinessContext);
    
     const [calculatedValues, setCalculatedValues] = useState([]);
+    const[data2,setData2]=useState([]);
+
+    useEffect(()=>{
+        console.log("data in table",)
+        const data2 = JSON.parse(localStorage.getItem("dailyData")) || [];
+        setData2(data2)
+        
+    },[data])
 
   
 
-    useEffect(() => {
-        if (data.length === 0) return;
-        console.log("data table",data)
+
+     
     
-        const storedValues = JSON.parse(localStorage.getItem("Fixed")) || [];
-        console.log("in table",storedValues)
-      
-        var grossProfitP = 0;
-        const values = data.map((element, index) => {
-            // Find all matching fixed costs for the current index
-           
-            const matchingFixed = Array.isArray(storedValues)
-                ? storedValues.filter(value => value.startI <= index)
-                : [];
-            
-            // Get the last matching fixed cost entry, if any
-            const lastMatchingFixed = matchingFixed[matchingFixed.length - 1];
+
+
+     
     
-            let currentFixedCost = 0;
-            let currentVariableCost = 0;
-            let currentTotalUnit = 0;
-           
-            // If a match is found, update current costs and units
-            if (lastMatchingFixed) {
-                currentFixedCost = lastMatchingFixed.fixedCost || 0;
-                
-                currentVariableCost = lastMatchingFixed.variableCost || 0;
-               
-                currentTotalUnit = lastMatchingFixed.totalUnit || 0;
-            }
-           
+        
+       
     
-            const revenue = data.slice(0, index + 1).reduce((acc, ex) => acc + (ex.sellingPricePerUnit * ex.numberOfUnit), 0);
-            const numberOfUnit = data.slice(0, index + 1).reduce((acc, ex) => acc + ex.numberOfUnit, 0);
-    
-            // Avoid division by zero
-            if (currentTotalUnit > 0) {
-                grossProfitP += (element.numberOfUnit * (currentVariableCost / currentTotalUnit));
-            }
-    
-            const grossProfit = revenue - (grossProfitP);
-            const netProfit = revenue - grossProfitP - currentFixedCost;
-            const newS=storedValues.filter((val,ind)=>val.startI<=index)
-                                 
-            const totalU=newS.reduce((acc, ex) => acc + ex.totalUnit, 0)
-            const totalVariableCost=newS.reduce((acc, ex) => acc + ex.variableCost, 0)
-           const breakEven=((currentFixedCost + totalVariableCost - (revenue || 0)) / 60) || 0
-           
-    
-            return { 
-                date: element.date, 
-                netProfit,
-                grossProfit,
-                revenue,
-                numberOfUnit,
-                totalU,
-                breakEven
-               
-            };
-        });
-        console.log("values",values)
-    
-        setCalculatedValues(values);
-        handleCalcPush(values);
-    }, [data,result]);
 
     return (
-        <>
-            <div style={{ display: "flex", justifyContent: "end", gap: "10px" }}>
-                <button onClick={handleFixedPopup} style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "lightGreen" }}>Fixed Costs</button>
-                <button onClick={handleDailyGet} style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "lightGreen" }}>Get Result</button>
-                <button onClick={handleClear} style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "red" }}>Clear</button>
-            </div>
 
-            {data.length > 0 && (
+            
+
+           data&& data.length > 0 && (
                 <div className="table-div">
                     <table>
                         <thead>
@@ -101,22 +51,25 @@ const BussinessTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.map((element, index) => {
-        
-                                const calculatedValue = calculatedValues[index] || {};
+                            { data.map((element, index) => {
+                                
+                                console.log("calc data",data);
+                                const calcI=element.indexCalc
+                                const calculatedValue = data2.filter((val,index)=>index==calcI) || {};
+                                console.log("cacu value",calculatedValue);
                                
                         
                                 return (
-                                    <tr key={index}>
-                                        <td>{`${element.date.day}, ${element.date.month} ${element.date.ethDate}, ${element.date.time}`}</td>
-                                        <td>{`${element.sellingPricePerUnit} ${element.unit}`}</td>
+                                    calculatedValue && calculatedValue.length>0&&<tr key={index}>
+                                        <td>{`${calculatedValue[0].date.day}, ${calculatedValue[0].date.month} ${calculatedValue[0].date.ethDate}, ${calculatedValue[0].date.time}, week ${calculatedValue[0].date.week}`}</td>
+                                        <td>{`${calculatedValue[0].sellingPricePerUnit} ${calculatedValue[0].unit}`}</td>
                                         <td>{element.numberOfUnit}</td>
-                                        <td>{calculatedValue.numberOfUnit || 0}</td>
-                                        <td>{calculatedValue.revenue || 0}</td>
-                                        <td>{calculatedValue.grossProfit || 0}</td>
-                                        <td>{calculatedValue.netProfit || 0}</td>
-                                        <td>{calculatedValue.totalU-calculatedValue.numberOfUnit}</td>
-                                        <td>{calculatedValue.breakEven<=0?"succeed":Math.ceil(calculatedValue.breakEven)}</td>
+                                        <td>{element.numberOfUnit || 0}</td>
+                                        <td>{element.revenue || 0}</td>
+                                        <td>{element.grossProfit || 0}</td>
+                                        <td>{element.netProfit || 0}</td>
+                                        <td>{element.totalU-element.numberOfUnit}</td>
+                                        <td>{element.breakEven<=0?"succeed":Math.ceil(element.breakEven)}</td>
                                         <td>
                                             <button style={{ padding: "0.6em 16px", border: "1px solid lightGrey", borderRadius: "4px", backgroundColor: "red" }} onClick={()=>handleDelete(index)} >X</button>
                                         </td>
@@ -125,9 +78,10 @@ const BussinessTable = () => {
                             })}
                         </tbody>
                     </table>
+                    <CurveChart/>
                 </div>
-            )}
-        </>
+            )
+    
     );
 };
 

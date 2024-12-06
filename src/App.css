@@ -5,13 +5,45 @@
 }
 
 .appContainer{
+   
    display: flex;
    flex-direction:column ;
  
-   padding: 10px;
-   row-gap: 20px;
-   padding-bottom: 50px;
+   padding:70px 140px;
+   padding-right:2.5rem;
+   padding-bottom: 0;
+   padding-right: 0;
+   overflow: auto;
+  
+  
+   height:100vh;
+   background-color: rgb(243, 237, 237);
+   
   
    
 
+}
+
+.app-containt::-webkit-scrollbar {
+      width: 10px; 
+      height: 10px; 
+      
+  };
+  .app-containt ::-webkit-scrollbar-track {
+   background: #f7efef; 
+   border-radius: 6px; 
+};
+
+
+.app-containt::-webkit-scrollbar-thumb {
+
+   border-radius: 6px; 
+   background: hsla(0, 0%, 1%, 0.623);
+}
+
+
+.app-containt:hover::-webkit-scrollbar-thumb {
+   background: hsla(0, 1%, 28%, 0.623);
+
+  
 }

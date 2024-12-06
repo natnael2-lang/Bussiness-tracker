@@ -13,17 +13,19 @@ const BussinessCalculator = () => {
         e.preventDefault();
         if (!sellingPricePerUnit || !numberOfUnit) { return; }
 
-        let date = EthCalender(new Date());
+        let date1 = EthCalender(new Date());
         
         // Extracting properties to display
-        const { time, day, month, date: ethDate } = date;
+        const { time, day, month, date: ethDate,week } = date1;
+        console.log("date is ",date1)
 
         let dataToSubmit = {
             date: {
                 time,
                 day,
                 month,
-                ethDate
+                ethDate,
+                week
             },
             sellingPricePerUnit: Number(sellingPricePerUnit),
             numberOfUnit: Number(numberOfUnit),

@@ -3,10 +3,13 @@
     outline: none;
     padding:0.6rem 16px;
     border-radius: 4px;
+    margin-bottom: 20px;
+    font-family: serif;
 }
 .FixedOverlay{
-    background-color: antiquewhite;
-    position: absolute;
+    color: white;
+    background-color:rgba(0,0,0,0.5);
+    position:fixed;
     top:0;
     left: 0;
     width: 100%;
@@ -14,5 +17,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
+    z-index: 3000;
+    backdrop-filter:blur(10px);
+
+}
+.FixedOverlay>form{
+    border: 2px solid lightgrey;
+    padding: 10px;
+    border-radius: 5px;
+  
 }
